@@ -1,0 +1,542 @@
+/* MassageINC SQL Queries
+Created By: Ruby Smith
+Created On: 01/31/2025
+Last Updated: 02/10/2025
+Purpose: To analyze client data and revenue data to see how MassageINC incoming data is doing.
+
+Data Timeframe:
+Start Date: ‘2021-06-01’
+End Date: ‘2025-01-31’
+
+Fiscal Dates:
+Year 1:
+WHERE
+  appointment_date BETWEEN '2021-06-01' AND '2022-05-31'
+Year 2: 
+WHERE
+  appointment_date BETWEEN '2022-06-01' AND '2023-05-31'
+Year 3:
+WHERE
+  appointment_date BETWEEN '2023-06-01' AND '2024-05-31'
+Year 4:
+WHERE
+  appointment_date BETWEEN '2024-06-01' AND '2025-01-31' */
+________________________________________________________________________________________
+--QUERIES USED TO SEPERATE ALL SERVICES FROM EACH APPOINTMENT AND GET A COUNT OF EACH SERVICE PROVIDED OVERALL
+SELECT
+  service_1,
+  COUNT(service_1)
+FROM
+  rs-project-01-429415.massageinc.sales
+GROUP BY
+  1;
+
+
+SELECT
+  service_2,
+  COUNT(service_2)
+FROM
+  rs-project-01-429415.massageinc.sales
+GROUP BY
+  1;
+
+
+SELECT
+  service_3,
+  COUNT(service_3)
+FROM
+  rs-project-01-429415.massageinc.sales
+GROUP BY
+  1;
+
+
+SELECT
+  service_4,
+  COUNT(service_4)
+FROM
+  rs-project-01-429415.massageinc.sales
+GROUP BY
+  1;
+
+______________________________________________
+--COUNT OF EACH SERVICE PROVIDED FISCALLY (JUNE THROUGH MAY)
+
+SELECT
+SUM(scount)
+FROM
+(
+SELECT
+  service_1,
+  COUNT(service_1) AS scount
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2022-02-01' AND '2022-05-31'
+GROUP BY
+  1);
+
+
+SELECT
+SUM(scount)
+FROM
+(
+SELECT
+  service_2,
+  COUNT(service_2) AS scount
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2022-02-01' AND '2022-05-31'
+GROUP BY
+  1);
+
+
+SELECT
+SUM(scount)
+FROM
+(
+SELECT
+  service_3,
+  COUNT(service_3) AS scount
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2022-02-01' AND '2022-05-31'
+GROUP BY
+  1);
+
+
+SELECT
+SUM(scount)
+FROM
+(
+SELECT
+  service_4,
+  COUNT(service_4) AS scount
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2022-02-01' AND '2022-05-31'
+GROUP BY
+  1);
+
+
+_________________________________________________
+--COUNT OF CANCELLATIONS PER MONTH
+SELECT
+  FORMAT_DATE('%m', appointment_date) AS month,
+  cancelled_by,
+  COUNT(cancelled_by) AS cancelled_appt
+FROM
+  rs-project-01-429415.massageinc.cancellations
+GROUP BY
+  2,
+  1
+ORDER BY
+  2,
+  1;
+
+
+SELECT
+  FORMAT_DATE('%a', appointment_date) AS weekday,
+  cancelled_by,
+  COUNT(cancelled_by) AS cancelled_appt
+FROM
+  `rs-project-01-429415.massageinc.cancellations`
+GROUP BY
+  2,
+  1
+ORDER BY
+  2;
+_______________________________________________
+--COUNT OF APPOINTMENTS EACH CLIENT AS SCHEDULED
+
+SELECT
+  clientID,
+  COUNT(clientID) AS client_count,
+FROM
+  rs-project-01-429415.massageinc.appointments
+GROUP BY
+  1
+ORDER BY
+  2 DESC;
+___________________________________________
+--LIST OF CLIENTS WHO HAVE NOT MADE AN APPOINTMENT
+
+SELECT
+  cl.string_field_0,
+  cl.string_field_1
+FROM
+  rs-project-01-429415.massageinc.clients AS cl
+LEFT OUTER JOIN
+  rs-project-01-429415.massageinc.appointments AS ap
+ON
+  cl.string_field_0 = ap.clientID
+WHERE
+  cl.string_field_1 NOT IN ( SELECT clientID
+  FROM rs-project-01-429415.massageinc.appointments);
+___________________________________________
+--TOTAL SALES FISCALLY (JUNE-MAY)
+
+SELECT
+  SUM(total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2021-06-01' AND '2022-05-31';
+
+
+SELECT
+  SUM(total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2022-06-01' AND '2023-05-31';
+
+
+SELECT
+  SUM(total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2023-06-01' AND '2024-05-31';
+
+SELECT
+  SUM(total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2024-06-01' AND '2025-01-31';
+__________________________________________________
+--TOTAL SALES OF EMPLOYEES HIGHERED ON 
+SELECT
+  SUM(total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2024-06-01' AND '2025-01-31'
+  AND therapist NOT LIKE "employeeA";
+___________________________________________
+--APPOINTMENT COUNT PER TIME OF APPOINTMENT
+
+SELECT
+  duration_minutes,
+  COUNT(duration_minutes)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2021-06-01' AND '2022-05-31'
+GROUP BY
+  duration_minutes
+ORDER BY
+  1;
+
+
+SELECT
+  duration_minutes,
+  COUNT(duration_minutes)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2022-06-01' AND '2023-05-31'
+GROUP BY
+  duration_minutes
+ORDER BY
+  1;
+
+
+SELECT
+  duration_minutes,
+  COUNT(duration_minutes)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2023-06-01' AND '2024-05-31'
+GROUP BY
+  duration_minutes
+ORDER BY
+  1;
+
+
+SELECT
+  duration_minutes,
+  COUNT(duration_minutes)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  appointment_date BETWEEN '2024-06-01' AND '2025-05-31'
+GROUP BY
+  duration_minutes
+ORDER BY
+  1;
+_________________________________________________
+--QUERYING CLIENTS WHO HAVENT COME BACK AND COUNTING HOW MANY APPOINTMENTS THEY SCHEDULED OVERALL
+
+SELECT
+  ap.client,
+  ap.appointment_date
+FROM
+  rs-project-01-429415.massageinc.not_back AS nb
+LEFT OUTER JOIN
+  rs-project-01-429415.massageinc.appointments AS ap
+ON
+  nb.string_field_1 =ap.clientID;
+
+
+SELECT
+  client,
+  COUNT(client)
+FROM
+  (
+    SELECT
+      ap.client,
+      ap.appointment_date
+    FROM
+      rs-project-01-429415.massageinc.not_back AS nb
+    LEFT OUTER JOIN
+      rs-project-01-429415.massageinc.appointments AS ap
+    ON
+      nb.string_field_1 =ap.clientID)
+GROUP BY
+  client
+ORDER BY
+  2 DESC;
+_____________________________________________________________________
+--AGGREGATED DATA FOR SALES TOTALS BY CALENDAR YEAR
+SELECT
+  Avg(total),
+  Min(total),
+  Max(Total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  purchase_date BETWEEN '2022-01-01' AND '2022-12-31';
+
+
+SELECT
+  Avg(total),
+  Min(total),
+  Max(Total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  purchase_date BETWEEN '2023-01-01' AND '2023-12-31';
+
+
+SELECT
+  Avg(total),
+  Min(total),
+  Max(Total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  purchase_date BETWEEN '2024-01-01' AND '2024-12-31';
+
+
+SELECT
+  Avg(total),
+  Min(total),
+  Max(Total)
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  purchase_date BETWEEN '2025-01-01' AND '2025-12-31';
+______________________________________________________________
+--QUERYING ALL CLIENTS WHO HAVENT BEEN BACK AND HOW MANY CANCELLATIONS THEY HAVE
+
+SELECT
+  can.client_name,
+  can.clientID
+FROM
+  rs-project-01-429415.massageinc.not_back AS nb
+LEFT OUTER JOIN
+  rs-project-01-429415.massageinc.cancellations AS can
+ON
+  nb.string_field_1 = can.clientID;
+
+
+SELECT
+  client_name,
+  COUNT(client_name)
+FROM
+  (
+    SELECT
+      can.client_name,
+      can.clientID
+    FROM
+      rs-project-01-429415.massageinc.not_back AS nb
+    LEFT OUTER JOIN
+      rs-project-01-429415.massageinc.cancellations AS can
+    ON
+      nb.string_field_1 = can.clientID)
+GROUP BY
+  1
+ORDER BY
+  2 DESC;
+_________________________________________________
+--CREATE LIST OF UNIQUE CLIENTS THAT BOOKED A SERVICE BETWEEN DATES LISTED IN QUERY
+SELECT
+  DISTINCT clientID,
+  client
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  purchase_date BETWEEN '2021-06-01' AND '2021-12-31';
+
+
+SELECT
+  DISTINCT clientID,
+  client
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  purchase_date BETWEEN '2022-01-01' AND '2022-12-31';
+
+
+SELECT
+  DISTINCT clientID,
+  client
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  purchase_date BETWEEN '2023-01-01' AND '2023-12-31';
+
+
+SELECT
+  DISTINCT clientID,
+  client
+FROM
+  rs-project-01-429415.massageinc.sales
+WHERE
+  purchase_date BETWEEN '2024-01-01' AND '2025-01-31';
+_________________________________________________________________
+--QUERYING CLIENT COUNTS FOR EACH CALENDAR YEAR, WHICH CLIENTS RETURNED THE FOLLOWING YEAR
+
+SELECT
+  client,
+  clientID,
+  year
+FROM
+  rs-project-01-429415.massageinc.retention
+WHERE
+  year = 2024;
+
+
+SELECT
+  ab.client
+FROM
+  (
+  SELECT
+    client,
+    clientID,
+    year
+  FROM
+    rs-project-01-429415.massageinc.retention
+  WHERE
+    year = 2022) AS ab
+LEFT OUTER JOIN
+  rs-project-01-429415.massageinc.retention AS bb
+ON
+  ab.clientID = bb.clientID
+WHERE
+  bb.year = 2021;
+
+
+SELECT
+  DISTINCT ab.client
+FROM
+  (
+  SELECT
+    client,
+    clientID,
+    year
+  FROM
+    rs-project-01-429415.massageinc.retention
+  WHERE
+    year = 2023) AS ab
+LEFT OUTER JOIN
+  rs-project-01-429415.massageinc.retention AS bb
+ON
+  ab.clientID = bb.clientID
+WHERE
+  bb.year = 2021 OR bb.year = 2022;
+
+
+SELECT
+  DISTINCT ab.client
+FROM
+  (
+  SELECT
+    client,
+    clientID,
+    year
+  FROM
+    rs-project-01-429415.massageinc.retention
+  WHERE
+    year = 2024) AS ab
+LEFT OUTER JOIN
+  rs-project-01-429415.massageinc.retention AS bb
+ON
+  ab.clientID = bb.clientID
+WHERE
+  bb.year = 2021 OR bb.year = 2022 OR bb.year = 2023;
+____________________________________________
+--COUNT OF CANCELLED APPOINTMENTS ANNUALLY BY CALENDAR YEAR
+
+SELECT
+  COUNT(clientID)
+FROM
+  rs-project-01-429415.massageinc.cancellations
+WHERE
+  appointment_date BETWEEN "2021-06-01" AND "2021-12-31";
+
+
+SELECT
+  COUNT(clientID)
+FROM
+  rs-project-01-429415.massageinc.cancellations
+WHERE
+  appointment_date BETWEEN "2022-01-01" AND "2022-12-31";
+
+
+SELECT
+  COUNT(clientID)
+FROM
+  rs-project-01-429415.massageinc.cancellations
+WHERE
+  appointment_date BETWEEN "2023-01-01" AND "2023-12-31";
+
+
+SELECT
+  COUNT(clientID)
+FROM
+  rs-project-01-429415.massageinc.cancellations
+WHERE
+  appointment_date BETWEEN "2024-01-01" AND "2024-12-31";
+_________________________________________
+--check client retention for employees
+
+SELECT
+  ap.client,
+  COUNT(ap2.client)
+ FROM
+  (
+  SELECT
+    DISTINCT client
+  FROM
+    rs-project-01-429415.massageinc.appointments
+  WHERE
+    therapist LIKE "EmployeeA"
+  ORDER BY
+    1) AS ap
+JOIN
+  rs-project-01-429415.massageinc.appointments AS ap2
+ON
+  ap.client = ap2.client
+WHERE
+  therapist LIKE "EmployeeA"
+GROUP BY
+  1
+ORDER BY
+  1;
+
